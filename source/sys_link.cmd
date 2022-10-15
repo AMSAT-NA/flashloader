@@ -44,7 +44,7 @@
 /*----------------------------------------------------------------------------*/
 /* Linker Settings                                                            */
 
---retain="*(.intvecs)"
+ --retain="*(.intvecs)"
 
 /* USER CODE BEGIN (1) */
 /* USER CODE END */
@@ -54,10 +54,9 @@
 
 MEMORY
 {
-    VECTORS (X)  : origin=0x00000000 length=0x00000020
-    FLASH0  (RX) : origin=0x00000020 length=0x000FFFE0
-    STACKS  (RW) : origin=0x08000000 length=0x00001500
-    RAM     (RW) : origin=0x08001500 length=0x0001EB00
+    VECTORS   (X)   : origin=0x00000000 length=0x00000020
+    FLASH   (RX)    : origin=0x00000020 length=0x0000FFE0
+	RAM (RW)        : origin=0x08001500 length=0x0000EB00
 
 /* USER CODE BEGIN (2) */
 /* USER CODE END */
@@ -72,14 +71,22 @@ MEMORY
 SECTIONS
 {
     .intvecs : {} > VECTORS
-    .text    : {} > FLASH0 
-    .const   : {} > FLASH0 
-    .cinit   : {} > FLASH0 
-    .pinit   : {} > FLASH0 
+    .TI.ramfunc :
+	   {
+	     bl_flash.obj (.text)
+	     Fapi_UserDefinedFunctions.obj (.text)
+
+	     --library = ../lib/F021_API_CortexR4_BE.lib (.text)
+	   } load = FLASH, run = RAM , table(BINIT)
+
+    .text    : {} > FLASH
+    .const   : {} > FLASH
+    .cinit   : {} > FLASH
+    .binit   : {} > FLASH
     .bss     : {} > RAM
     .data    : {} > RAM
     .sysmem  : {} > RAM
-    
+
 
 /* USER CODE BEGIN (4) */
 /* USER CODE END */
