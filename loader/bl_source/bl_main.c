@@ -92,7 +92,7 @@ uint8_t *g_pucDataBuffer;
 
 static uint8 c;
 
-void main(void) {
+void loader_main(void) {
 	_enable_IRQ();
 	/* Initialize SCI Routines to receive Command and transmit data */
 	sciInit();

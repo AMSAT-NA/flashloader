@@ -112,12 +112,12 @@ static void showMainMenu(){
 			"================== Main Menu ==========================");
 	UART_putString(UART, CRLF);
 	UART_putString(UART,
-			"  1. Download Application Image To the Internal Flash");
+			"  1. Download an Application Image To the Internal Flash");
 	UART_putString(UART, CRLF);
 	UART_putString(UART,
-			"  2. Upload The Application Image From the Internal Flash");
+			"  2. Upload the Application Image From the Internal Flash");
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "  3. Execute The Application Code");
+	UART_putString(UART, "  3. Execute the Application Code");
 	UART_putString(UART, CRLF);
 	UART_putString(UART, "  4. Get Flash Loader Version");
 	UART_putString(UART, CRLF);
