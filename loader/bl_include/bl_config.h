@@ -25,42 +25,6 @@
 #ifndef __BL_CONFIG_H__
 #define __BL_CONFIG_H__
 
-//*****************************************************************************
-//
-// The following defines are used to configure the operation of the boot
-// loader.  For each define, its interactions with other defines are described.
-// First is the dependencies (in other words, the defines that must also be
-// defined if it is defined), next are the exclusives (in other words, the
-// defines that can not be defined if it is defined), and finally are the
-// requirements (in other words, the defines that must be defined if it is
-// defined).
-//
-// The following defines must be defined in order for the boot loader to
-// operate:
-//
-//     One of CAN_ENABLE_UPDATE, SPI_ENABLE_UPDATE, SCI_ENABLE_UPDATE
-//     APP_START_ADDRESS
-//
-//*****************************************************************************
-
-//*****************************************************************************
-//
-// The frequency (MHz) of the crystal used to clock the microcontroller.
-//
-// This defines the crystal frequency used by the microcontroller running the
-// boot loader.
-//
-// Depends on: None
-// Exclusive of: None
-// Requires: None
-//
-//*****************************************************************************
-//#define TMS570LS31
-//#define RM48
-//#define RM46
-//#define TMS570LS04
-//#define RM42
-
 //#define TMS570LS12
 #define TMS570LS0914
 
@@ -73,6 +37,9 @@
 // Requires: UART_FIXED_BAUDRATE, BUFFER_SIZE
 //*****************************************************************************
 #define UART_ENABLE_UPDATE
+
+// Use the N2HET as serial port instead of the proper SCI
+#define USE_N2HET
 
 //*****************************************************************************
 // The starting address of the application.  This must be a multiple of 32K(sector size)
@@ -91,7 +58,12 @@
 #define APP_STATUS_ADDRESS       0x00010000
 
 #define UART_BAUDRATE     115200
-#define UART              scilinREG   /* Use UART port 1 for UART boot */
+
+#ifndef USE_N2HET
+    #define UART              scilinREG   /* Use UART port 1 for UART boot */
+#else
+	#define UART 0   // Not used for HET port
+#endif
 
 #define BUFFER_SIZE             64       /*words in the data buffer used for receiving packets*/
 

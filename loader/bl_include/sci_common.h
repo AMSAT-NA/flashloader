@@ -43,6 +43,6 @@ uint32_t UART_txByte (sciBASE_t *sci, char c);
 int UART_getChar(sciBASE_t *sci, uint32_t timeout);
 const char *U32toStr(uint32_t val);
 void UART_send32BitData(sciBASE_t *sci, uint32_t data);
-
+void HetUART1PutChar(char data);
 
 #endif  /* _SCI_COMMON_H */

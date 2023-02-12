@@ -27,6 +27,7 @@
 #include "sci.h"
 #include "string.h"
 #include "bl_input_queue.h"
+#include "het.h"
 
 #if defined (UART_ENABLE_UPDATE)
 
@@ -55,7 +56,7 @@ void Int2Str(char *str, int intnum) {
 /**
  * @brief  Convert a string to an integer
  * @param  inputstr: The string to be converted
- * @param  intnum: The intger value
+ * @param  intnum: The integer value
  * @retval 1: Correct
  *         0: Error
  */
@@ -125,16 +126,6 @@ uint32_t Str2Int(unsigned char *inputstr, int *intnum) {
  * block until one is ready
  */
 char UART_getKey(sciBASE_t *sci) {
-//	char key = 0;
-//	/* Waiting for user input */
-//	while (1) {
-//		if ((sci->FLR & (uint32)SCI_RX_INT) != 0) {
-//			key = (char) sci->RD;
-//			break;
-//		}
-//	}
-//	return key;
-
 	while(getQueueSize() == 0)
 		;
 	return dequeue();
@@ -145,44 +136,12 @@ char UART_getKey(sciBASE_t *sci) {
  * otherwise return -1
  */
 int UART_getChar(sciBASE_t *sci, uint32_t timeout) {
-//	char c;
-//	while (timeout-- > 0) {
-//		if ((sci->FLR & (uint32)SCI_RX_INT) != 0) {
-//			c = (char) sci->RD;
-//			return c;
-//		}
-//	}
-//	return (-1);
 	while(timeout-- > 0){
 		if(getQueueSize() > 0)
 			return dequeue();
 	}
 	return(-1);
 }
-/**
- * @brief  Receive byte from sender
- * @param  c: Character
- * @param  timeout: Timeout
- * @retval 0: Byte received
- *         -1: Timeout
- */
-//int UART_rxByte(sciBASE_t *sci, char *c, uint32_t timeout) {
-//	while (timeout-- > 0) {
-//		if ((sci->FLR & (uint32)SCI_RX_INT) != 0) {
-//			*c = (char) sci->RD;
-//			return 0;
-//		} else {
-//			*c = 0x00;
-//		}
-//	}
-//	return -1;
-//}
-
-/** @fn void UART_send32BitData(sciBASE_t *sci, uint32_t data)
- *
- *	Function used for send a 32bit data on to the SCI at the
- *   configured baud rate
- */
 
 const char* U32toStr(uint32_t val) {
 	/* Maximum number of decimal digits in u32 is 10 */
@@ -213,10 +172,7 @@ void UART_send32BitData(sciBASE_t *sci, uint32_t data) {
 		if (c_get > 9)
 			c_get += 7;
 		c_get += 48;
-
-		while ((sci->FLR & (uint32)SCI_TX_INT) == 0) { /* wait */
-		};
-		sci->TD = c_get;
+		UART_txByte(sci, c_get);
 		data = data << 4;
 	}
 }
@@ -239,11 +195,13 @@ void UART_putString(sciBASE_t *sci, char *s) {
  * @retval None
  */
 void UART_putChar(sciBASE_t *sci, char c) {
+#ifndef USE_N2HET
 	while ((sci->FLR & (uint32)SCI_TX_INT) == 0)
 		;
 	sci->TD = c;
-	{
-	}
+#else
+	HetUART1PutChar(c);
+#endif
 }
 
 /**
@@ -252,9 +210,24 @@ void UART_putChar(sciBASE_t *sci, char c) {
  * @retval 0: Byte sent
  */
 uint32_t UART_txByte(sciBASE_t *sci, char c) {
+#ifndef USE_N2HET
 	while ((sci->FLR & (uint32)SCI_TX_INT) == 0)
 		;
 	sci->TD = c;
+#else
+	HetUART1PutChar(c);
+#endif
 	return 0;
 }
 
+void HetUART1PutChar(char data)
+{
+  unsigned int Tmp = data;
+
+  Tmp <<= 1;                                    // Shift in start bit (0)
+  Tmp |= 0x00000200;                            // Add stop bit (1)
+  while(hetRAM1->Instruction[2].Data != 0)		// Wait for previous character to be sent
+	  ;
+  hetRAM1->Instruction[4].Data = Tmp << 7;  // Load TX buffer
+  hetRAM1->Instruction[2].Data =  10 << 7;  // Load bit count
+}

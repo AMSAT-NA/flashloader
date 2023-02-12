@@ -32,14 +32,15 @@
 *
 */
 
+#include "bl_config.h"
 #include "sys_common.h"
 #include "sci_common.h"
-#include "bl_config.h"
 #include "bl_uart.h"
 #include "system.h"
 #include "bl_check.h"
 #include "sci.h"
 #include "bl_input_queue.h"
+#include "het.h"
 
 /*****************************************************************************
  *
@@ -93,12 +94,23 @@ uint8_t *g_pucDataBuffer;
 static uint8 c;
 
 void loader_main(void) {
-	_enable_IRQ();
-	/* Initialize SCI Routines to receive Command and transmit data */
+#ifndef USE_N2HET
 	sciInit();
 	sciSetBaudrate(UART, UART_BAUDRATE);
-	initQueue();
+#else
+	// Initialize N2HET and input queue
+	hetInit();
+#endif
 
+	initQueue();
+	asm(" cpsie i"); // Enable processor interrupts
+
+#ifdef USE_N2HET
+	// Clear all interrupts for N2HET
+	hetREG1->GCR = 0x01030001;
+    hetREG1->INTENAC = 0xFFFFFFFF;
+    hetREG1->FLG = 0xFFFFFFFF;
+#endif
 	// Bring GIO out of reset before the call to CheckForceUpdate() below
 	CheckGPIOForceUpdate();
 
@@ -106,12 +118,34 @@ void loader_main(void) {
 		g_ulTransferAddress = (uint32_t) APP_START_ADDRESS;
 		((void (*)(void)) g_ulTransferAddress)();
 	}
+
+#ifndef USE_N2HET
 	sciReceive(UART, 1, &c); // As we are in Interrupt mode this call will not block
+#else
+	hetREG1->INTENAS = 1 << 23; // Enable HET Receive interrupt
+#endif
 	UpdaterUART();
+
+    while(1);
+}
+
+/*
+ * This is a Interrupt callback routine from the N2HET processor.
+ * Offset refers to the line number in the HET program.
+ * Instruction[25].Data is the 32-bit data field of the 96-bit instruction number 25,
+ * which will contain the data byte received.
+ */
+void hetNotification(hetBASE_t *het, uint32 offset)
+{
+    char c;
+    if(offset==24){
+        c = hetRAM1->Instruction[25].Data;
+        enqueue(c);
+    }
 }
 
 /**
- * This function fires for each character received
+ * This function fires for each character received on SCI interface
  */
 void sciNotification(sciBASE_t *sci, uint32 flags)
 {

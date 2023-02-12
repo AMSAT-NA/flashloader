@@ -3,7 +3,7 @@
   <DEVICE>
     <family>TMS570LS09x_07x</family>
     <device>TMS570LS0914PGE</device>
-    <dilfile>FlahLoader.dil</dilfile>
+    <dilfile>FlashLoader.dil</dilfile>
     <tools>ti</tools>
   </DEVICE>
   <VERSION>
@@ -12,10 +12,10 @@
   <HET1>
     <FILENAME>
       <HET1ASMHDR>
-        <NAME/>
+        <NAME>HET\HET_EMU_SCI.h</NAME>
       </HET1ASMHDR>
       <HET1ASMSRC>
-        <NAME/>
+        <NAME>HET\HET_EMU_SCI.c</NAME>
       </HET1ASMSRC>
     </FILENAME>
   </HET1>
@@ -269,10 +269,10 @@
       <SRCADC>
 </SRCADC>
       <HET1ASMHDR>
-        <NAME/>
+        <NAME>HET\HET_EMU_SCI.h</NAME>
       </HET1ASMHDR>
       <HET1ASMSRC>
-        <NAME/>
+        <NAME>HET\HET_EMU_SCI.c</NAME>
       </HET1ASMSRC>
       <STDHDRHET>
         <NAME>std_nhet.h</NAME>
@@ -290,7 +290,8 @@
         <NAME>htu.h</NAME>
       </HDRHTU>
       <SRCHET>
-</SRCHET>
+        <NAME>het.c</NAME>
+      </SRCHET>
       <HET2ASMHDR>
         <NAME/>
       </HET2ASMHDR>
@@ -531,8 +532,14 @@
         <PATH>include\htu.h</PATH>
       </HDRHTU>
       <SRCHET>
-        <PATH></PATH>
+        <PATH>source\het.c</PATH>
       </SRCHET>
+      <HET1ASMHDR>
+        <PATH>include\HET_EMU_SCI.h</PATH>
+      </HET1ASMHDR>
+      <HET1ASMSRC>
+        <PATH>source\HET_EMU_SCI.c</PATH>
+      </HET1ASMSRC>
     </FILENAMES>
   </HET>
   <ESM>
