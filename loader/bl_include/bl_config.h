@@ -41,6 +41,10 @@
 // Use the N2HET as serial port instead of the proper SCI
 #define USE_N2HET
 
+// Use N2HET pin for power sense
+
+#define N2HET_INPUT_PIN 8
+
 //*****************************************************************************
 // The starting address of the application.  This must be a multiple of 32K(sector size)
 // bytes (making it aligned to a page boundary), and can not be 0 (the first sector is 

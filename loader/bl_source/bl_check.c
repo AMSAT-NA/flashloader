@@ -26,7 +26,7 @@
 #include "bl_config.h"
 #include "bl_check.h"
 #include "sci.h"
-//#include "sci_common.h"
+#include "het.h"
 
 //*****************************************************************************
 //
@@ -67,6 +67,7 @@ uint32_t g_ulForced;
 //*****************************************************************************
 #ifdef ENABLE_UPDATE_CHECK
 uint32_t CheckGPIOForceUpdate(void) {
+#ifndef N2HET_INPUT_PIN
 	/** bring GIO module out of reset */
 	gioREG->GCR0 = 1;
 	gioREG->ENACLR = 0xFF;
@@ -82,7 +83,14 @@ uint32_t CheckGPIOForceUpdate(void) {
 		g_ulForced = 1;
 		return (1);
 	}
-
+#else	// We are using N2HET pin rather than GPIO
+	hetREG1->DIR &= ~(1 << N2HET_INPUT_PIN);
+	if (!((hetREG1->DIN & (0x1 << N2HET_INPUT_PIN)) == 0)) {
+		// Remember that this was a forced update.
+		g_ulForced = 1;
+		return (1);
+	}
+#endif
 	// No update is being requested so return 0.
 	return (0);
 }
