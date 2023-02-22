@@ -72,7 +72,7 @@ void get_hardware_Info(void) {
 	UART_putString(UART, CRLF);
 	UART_putString(UART, "FLASH START:   00010000");
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "FLASH END:     00140000");
+	UART_putString(UART, "FLASH END:     00100000");
 
 	return;
 }
