@@ -64,10 +64,12 @@
 
 #include "errata_SSWF021_45.h"
 /* USER CODE BEGIN (1) */
+#include "cpy_tbl.h"
 /* USER CODE END */
 
 
 /* USER CODE BEGIN (2) */
+extern COPY_TABLE ram_undef;
 /* USER CODE END */
 
 
@@ -389,6 +391,8 @@ void _c_int00(void)
     _coreEnableRamEcc_();
 
 /* USER CODE BEGIN (39) */
+    // Copy interrupt handler code and addresses to SRAM
+    copy_in(&ram_undef);
 /* USER CODE END */
 
     /* Start PBIST on all dual-port memories */

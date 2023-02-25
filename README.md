@@ -246,3 +246,8 @@ and can be used directly by `HALCoGen` as described above.
 In case the `.het` file needs to be changed, the files need to be generated again.
 The best way to do that is to run the `assemble` command. This command
 assumes that HET tool has been installed and its `\bin` directory added to `PATH`.
+
+## Exception Handling
+
+For a detailed description of exception handling between the Flashloader and the
+loaded application see the [Exception Handling document](docs/ExceptionHandling.md)

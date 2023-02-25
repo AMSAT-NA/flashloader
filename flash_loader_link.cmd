@@ -45,6 +45,7 @@
 /* Linker Settings                                                            */
 
  --retain="*(.intvecs)"
+ --retain="*(.ramIntvecs)"
 
 /* USER CODE BEGIN (1) */
 /* USER CODE END */
@@ -54,9 +55,14 @@
 
 MEMORY
 {
-    VECTORS   (X)   : origin=0x00000000 length=0x00000020
-    FLASH   (RX)    : origin=0x00000020 length=0x0000FFE0
-	RAM (RW)        : origin=0x08001500 length=0x0000EB00
+	// Flash loader only occupies the first 64k of flash
+    VECTORS   (X)   : origin=0x00000000 length=0x00000040
+    FLASH   (RX)    : origin=0x00000040 length=0x0000FFC0
+
+	// SRAM on 0914 is 128 kBytes or 0x20000
+    STACKS  (RW)    : origin=0x08000000 length=0x00001500
+	RAM (RW)        : origin=0x08001500 length=0x0001EAE0
+	RAMVECTORS(RWX) : origin=0x0801FFE0 length=0x00000020
 
 /* USER CODE BEGIN (2) */
 /* USER CODE END */
@@ -79,13 +85,16 @@ SECTIONS
 	     --library = ../lib/F021_API_CortexR4_BE.lib (.text)
 	   } load = FLASH, run = RAM , table(BINIT)
 
-    .text    : {} > FLASH
-    .const   : {} > FLASH
-    .cinit   : {} > FLASH
-    .binit	 : {} > FLASH
-    .bss     : {} > RAM
-    .data    : {} > RAM
-    .sysmem  : {} > RAM
+    .text        : {} > FLASH
+    .const       : {} > FLASH
+    .cinit       : {} > FLASH
+    .binit	     : {} > FLASH
+    .ovly		 : {} > FLASH
+    .bss         : {} > RAM
+    .data        : {} > RAM
+    .sysmem      : {} > RAM
+    .ramIntvecs  : {} load=FLASH, run=RAMVECTORS, palign=8, table(ram_undef)
+
 
 
 /* USER CODE BEGIN (4) */
