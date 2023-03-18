@@ -37,7 +37,7 @@ uint32_t Str2Int(unsigned char *inputstr,int *intnum);
 uint32_t UART_getInteger(sciBASE_t *sci, int * num);
 char UART_getKey(sciBASE_t *sci);
 void UART_putChar(sciBASE_t *sci, char c);
-void UART_putString(sciBASE_t *sci, char *s);
+void UART_putString(sciBASE_t *sci, const char *s);
 //int UART_rxByte (sciBASE_t *sci, char *c, uint32_t timeout);
 uint32_t UART_txByte (sciBASE_t *sci, char c);
 int UART_getChar(sciBASE_t *sci, uint32_t timeout);
