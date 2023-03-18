@@ -28,13 +28,11 @@
 
 //*****************************************************************************
 //
-// Prototype for the forced update check function.
+// Prototypes for the check functions.
 //
 //*****************************************************************************
-uint32_t CheckForceUpdate(void);
-#ifdef ENABLE_UPDATE_CHECK
-uint32_t CheckGPIOForceUpdate(void);
-extern uint32_t g_ulForced;
-#endif
+bool isApplicationValid(void);
+bool isGPIOactive(void);
+bool runApplication(void);
 
 #endif // __BL_CHECK_H__
