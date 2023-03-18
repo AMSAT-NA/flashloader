@@ -60,9 +60,10 @@ MEMORY
     FLASH   (RX)    : origin=0x00000040 length=0x0000FFC0
 
 	// SRAM on 0914 is 128 kBytes or 0x20000
-    STACKS  (RW)    : origin=0x08000000 length=0x00001500
-	RAM (RW)        : origin=0x08001500 length=0x0001EAE0
-	RAMVECTORS(RWX) : origin=0x0801FFE0 length=0x00000020
+	RUNTARGET (RW)  : origin=0x08000000 length=0x00000010
+    STACKS  (RW)    : origin=0x08000010 length=0x000014F0
+    RAM (RW)        : origin=0x08001500 length=0x0001EAE0
+    RAMVECTORS(RWX) : origin=0x0801FFE0 length=0x00000020
 
 /* USER CODE BEGIN (2) */
 /* USER CODE END */
@@ -90,6 +91,7 @@ SECTIONS
     .cinit       : {} > FLASH
     .binit	     : {} > FLASH
     .ovly		 : {} > FLASH
+	.runTarget   : {} > RUNTARGET, type = NOINIT
     .bss         : {} > RAM
     .data        : {} > RAM
     .sysmem      : {} > RAM
