@@ -219,6 +219,13 @@ void _c_int00(void)
         Add user code to handle software reset. */
 		
 /* USER CODE BEGIN (22) */
+    	systemInit();
+    	copy_in(&ram_undef);
+    	_coreEnableIrqVicOffset_();
+    	vimInit();
+    	esmInit();
+    	__TI_auto_init();
+    	main();
 /* USER CODE END */
 	}
     else

@@ -182,7 +182,7 @@ void UART_send32BitData(sciBASE_t *sci, uint32_t data) {
  * @param  s: The string to be printed
  * @retval None
  */
-void UART_putString(sciBASE_t *sci, char *s) {
+void UART_putString(sciBASE_t *sci, const char *s) {
 	while (*s != '\0') {
 		UART_putChar(sci, *s);
 		s++;

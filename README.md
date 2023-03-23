@@ -39,10 +39,12 @@ menu will be shown
 ================== Main Menu ==========================
   1. Download an Application Image To the Internal Flash
   2. Upload the Application Image From the Internal Flash
-  3. Execute The Application Code
+  3. Execute the Application Code
   4. Get Flash Loader Version
   5. Get Device Information
   6. Application Status
+  7. Select Run target
+  8. Soft reset
   ?. Show this menu
 =======================================================
 ```
@@ -111,8 +113,10 @@ Option `6` shows the following information about the application, if loaded:
 
 ```text
 Application valid pattern: 5A5A5A5A
-Application image size: 0000FE00
+Application image size:    0000FE00
 Application image address: 00010100
+
+Run target value set to: 0x00000000, Unknown
 Prompt pin is active
 ```
 
@@ -123,6 +127,30 @@ The status of the prompt pin can also be seen on this output. The idea is to con
 this GIO input pin to the Vcc pin on the `USB-Serial` adapter from the host computer
 and thereby have the flash loader go to prompt mode after the next reboot when
 a host is connected regardless of the validity of the stored application.
+
+### Select Run target
+
+This option allows for setting the value of the `run target` in SRAM.
+Hitting `7` repeatedly will cycle trough the available run targets.
+
+```text
+Run target value set to: 0x55555555, Flash loader
+Run target value set to: 0xAAAAAAAA, Application
+Run target value set to: 0x00000000, Unknown
+```
+
+The run target together with the status of the GPIO-pin connected
+to the USB-Serial interface will allow for bypassing the flash loader
+on reset as shown below, when a valid application is in flash.
+
+| GPIO	| Target pattern | Jump to |
+| ------|----------------|---------|
+| Low	  | 0x55555555 | Loader |
+| Low	  | 0xaaaaaaaa | Application |
+| Low	  | 0x00000000 | Application |
+| High  | 0x55555555 | Loader |
+| High  | 0xaaaaaaaa | Application |
+| High  | 0x00000000 | Loader |
 
 ## Memory structure
 
@@ -151,15 +179,25 @@ The linker command file for an application running using the flash loader
 could have the `MEMORY` section like:
 
 ```text
-    VECTORS (X)  : origin=0x00010100 length=0x00000020
-    FLASH0  (RX) : origin=0x00010120 length=0x0012FEE0
-    STACKS  (RW) : origin=0x08000000 length=0x00001500
-    RAM     (RW) : origin=0x08001500 length=0x0002EB00
+  VECTORS   (X)   : origin=0x00000000 length=0x00000040
+  FLASH   (RX)    : origin=0x00000040 length=0x0000FFC0
+
+  RUNTARGET (RW)  : origin=0x08000000 length=0x00000010
+  STACKS  (RW)    : origin=0x08000010 length=0x000014F0
+  RAM (RW)        : origin=0x08001500 length=0x0001EAE0
+  RAMVECTORS(RWX) : origin=0x0801FFE0 length=0x00000020
 ```
 
 Note that the length of the `FLASH0` has to be shortened by the new offset too.
 Also note that this is only done once for a given project and can possibly
 be done automatically in the `HalCodeGen` program generator.
+
+`RUNTARGET` is a new small (16 byte) section that holds the run target
+value described above.
+
+`RAMVECTORS` is another new section that holds interrupt vectors in RAM,
+in order to dispatch correctly between ISR in flash loader and the
+application.
 
 ## Development environment
 
