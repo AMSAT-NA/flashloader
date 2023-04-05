@@ -62,6 +62,9 @@
 #include "sci.h"
 #include "bl_ymodem.h"
 #include "sys_common.h"
+#include "bl_run_target.h"
+
+#define MAX_HEADER_COUNT 10  // If no answer after this many header requests, reset
 
 char fileName[FILENAME_LEN];
 extern unsigned int g_pulUpdateSuccess[8];
@@ -79,6 +82,7 @@ int Ymodem_Receive(sciBASE_t *sci, char *buf) {
 	unsigned char ucBank = 0;
 	unsigned short packet_size, loop = 1;
 	unsigned int FlashDestination = APP_START_ADDRESS; /* Flash user program offset */
+	int headerCount;
 
 	g_pulUpdateSuccess[1] = FlashDestination;
 
@@ -94,7 +98,9 @@ int Ymodem_Receive(sciBASE_t *sci, char *buf) {
 		GetPacketData,
 		Packet0,
 		DataPacket
-	} state;
+	};
+
+	enum rcvstates state, previous_state;
 
 	while (loop) {
 		file_done = 0;
@@ -102,8 +108,20 @@ int Ymodem_Receive(sciBASE_t *sci, char *buf) {
 		pcBuf = buf;
 		errors = 0;
 		state = AskHeader;
+		headerCount = 0;
 
 		while (file_done == 0) {
+			previous_state = state;
+			// Only allow to send 'C' MAX_HEADER_COUNT times before returning back to menu
+			if((previous_state == WaitHeader || previous_state == AskHeader) && state == WaitHeader){
+				if(headerCount++ > MAX_HEADER_COUNT){
+					set_target(FLASH_LOADER);
+					softReset();
+				}
+			}
+			if(state == GetPacketData){
+				headerCount = 0;
+			}
 			switch (state) {
 			/* The receiver starts by sending an 'C' (0x43) to the sender indicating it wishes
 			 * to use the CRC method of block validating. After sending the initial 'C' the receiver waits
