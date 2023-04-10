@@ -66,6 +66,7 @@ uint8_t *g_pucDataBuffer;
 static uint8 c;
 
 void loader_main(void) {
+    startCounter();
 #ifndef USE_N2HET
 	sciInit();
 	sciSetBaudrate(UART, UART_BAUDRATE);
