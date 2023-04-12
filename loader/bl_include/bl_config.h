@@ -48,7 +48,7 @@
 // Port and pin to use for watchdog
 #define WATCHDOG_PORT spiPORT1
 #define WATCHDOG_PIN 1
-#define WATCHDOG_TIMED_WAIT /*Undefine this turn off clock waits for hitting watchdog*/
+//#define WATCHDOG_TIMED_WAIT /*Undefine this turn off clock waits for hitting watchdog*/
 #define MIN_WATCHDOG_TOGGLE 1000 /*How many clock ticks must we wait between toggles*/
 
 

@@ -300,7 +300,8 @@ directly to the application code.
 
 In addition, the RT-IHU includes a **watchdog**.  The code running in the RT-IHU must toggle the **watchdog reset**
 pin (aka kick the watchdog) at least every few milliseconds or the processor will reset.  The pin for the
-watchdog reset is SPI1 (when set up as a GIO) pin 1.  The watchdog chip has ignores resets that are too often.
-The flash loader has the capability of skipping resets based on the processor's RTI counter.  However that
+watchdog reset is SPI1 (when set up as a GIO) pin 1.  The watchdog chip has ignores resets that are too often so it
+might be that in some cases, the loader would kick the watchdog too quickly.  Thus
+the flash loader has the capability of skipping resets based on the processor's RTI counter.  However that
 adds code and uses additional chip capabilities, so it can be turned off by not defining **WATCHDOG_TIMED_WAIT**
-in bl_config.h
+in bl_config.h.
