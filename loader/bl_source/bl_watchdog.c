@@ -11,27 +11,31 @@
 #include "bl_config.h"
 
 void kickWatchdog(void){
-    uint32_t currentValue,currentCounter;;
+    uint32_t currentValue;
     uint32_t pinMask = (1<<WATCHDOG_PIN);
-    static uint32_t lastCounterValue=0;
+#ifdef WATCHDOG_TIMED_WAIT
+    static uint32_t currentCounter,lastCounterValue=0;
     int32_t diffCounter;
     currentCounter = rtiREG1->CNT[0].FRCx;
     diffCounter = (int32_t)currentCounter - (int32_t)lastCounterValue;
     if(diffCounter > MIN_WATCHDOG_TOGGLE){
         lastCounterValue = currentCounter;
+#endif
         WATCHDOG_PORT->DIR |= pinMask; //Set the watchdog pin to allow input
-        currentValue = WATCHDOG_PORT->DIN;
-        currentValue = ~currentValue & pinMask; //currentValue has now has the value of the pin we want, and 0 in the rest
+        currentValue = (WATCHDOG_PORT->DIN) & pinMask;
         if (currentValue == 0){
             WATCHDOG_PORT->DSET = pinMask; //Invert the pin to kick the wd.
         } else {
             WATCHDOG_PORT->DCLR = pinMask;
         }
+#ifdef WATCHDOG_TIMED_WAIT
     } else if (diffCounter<0){
         lastCounterValue = currentCounter;
     } //Here, it wrapped.
+#endif
 }
-void rtiInit(void)
+#ifdef WATCHDOG_TIMED_WAIT
+static void rtiInit(void)
 {
 /* USER CODE BEGIN (3) */
 /* USER CODE END */
@@ -130,7 +134,7 @@ void rtiInit(void)
 /* SourceId : RTI_SourceId_002 */
 /* DesignId : RTI_DesignId_002 */
 /* Requirements : HL_SR77 */
-void rtiStartCounter(uint32 counter)
+static void rtiStartCounter(uint32 counter)
 {
 /* USER CODE BEGIN (7) */
 /* USER CODE END */
@@ -157,9 +161,11 @@ void rtiStartCounter(uint32 counter)
 *
 *   This function stops selected counter block of the selected RTI module.
 */
+#endif
 void startCounter(void){
+#ifdef WATCHDOG_TIMED_WAIT
     rtiInit();
     rtiStartCounter(0);
-
+#endif
 }
 

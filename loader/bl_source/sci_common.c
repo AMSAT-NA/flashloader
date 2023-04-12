@@ -28,6 +28,7 @@
 #include "string.h"
 #include "bl_input_queue.h"
 #include "het.h"
+#include "bl_watchdog.h"
 
 #if defined (UART_ENABLE_UPDATE)
 
@@ -126,7 +127,9 @@ uint32_t Str2Int(unsigned char *inputstr, int *intnum) {
  * block until one is ready
  */
 char UART_getKey(sciBASE_t *sci) {
-	while(getQueueSize() == 0)
+	while(getQueueSize() == 0){
+	    kickWatchdog();
+	}
 		;
 	return dequeue();
 }
@@ -137,6 +140,7 @@ char UART_getKey(sciBASE_t *sci) {
  */
 int UART_getChar(sciBASE_t *sci, uint32_t timeout) {
 	while(timeout-- > 0){
+	    kickWatchdog();
 		if(getQueueSize() > 0)
 			return dequeue();
 	}
@@ -200,6 +204,7 @@ void UART_putChar(sciBASE_t *sci, char c) {
 		;
 	sci->TD = c;
 #else
+	kickWatchdog();
 	HetUART1PutChar(c);
 #endif
 }
@@ -210,6 +215,7 @@ void UART_putChar(sciBASE_t *sci, char c) {
  * @retval 0: Byte sent
  */
 uint32_t UART_txByte(sciBASE_t *sci, char c) {
+    kickWatchdog();
 #ifndef USE_N2HET
 	while ((sci->FLR & (uint32)SCI_TX_INT) == 0)
 		;
