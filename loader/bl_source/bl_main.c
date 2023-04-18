@@ -13,7 +13,7 @@
 #include "sci.h"
 #include "bl_input_queue.h"
 #include "het.h"
-
+#include "bl_watchdog.h"
 /*****************************************************************************
  *
  * This holds the current remaining size in bytes to be downloaded.
@@ -66,6 +66,7 @@ uint8_t *g_pucDataBuffer;
 static uint8 c;
 
 void loader_main(void) {
+    startCounter();
 #ifndef USE_N2HET
 	sciInit();
 	sciSetBaudrate(UART, UART_BAUDRATE);

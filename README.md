@@ -289,3 +289,19 @@ assumes that HET tool has been installed and its `\bin` directory added to `PATH
 
 For a detailed description of exception handling between the Flashloader and the
 loaded application see the [Exception Handling document](docs/ExceptionHandling.md)
+
+## Use in AMSAT RT-IHU
+
+There are two details required by the AMSAT RT-IHU satellite on-board computer.  One is mentioned above
+and called the **prompt pin**.  On Golf, this is called the **Attached** line, which is high when there
+is an umbilical attached. When the umbilical is attached, this loader will be started and will be ready
+to load new code.  In space there will never be an umbilical attached, and thus this loader will jump
+directly to the application code.
+
+In addition, the RT-IHU includes a **watchdog**.  The code running in the RT-IHU must toggle the **watchdog reset**
+pin (aka kick the watchdog) at least every few milliseconds or the processor will reset.  The pin for the
+watchdog reset is SPI1 (when set up as a GIO) pin 1.  The watchdog chip has ignores resets that are too often so it
+might be that in some cases, the loader would kick the watchdog too quickly.  Thus
+the flash loader has the capability of skipping resets based on the processor's RTI counter.  However that
+adds code and uses additional chip capabilities, so it can be turned off by not defining **WATCHDOG_TIMED_WAIT**
+in bl_config.h.
