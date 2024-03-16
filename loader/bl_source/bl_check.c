@@ -8,7 +8,7 @@
 // Software License Agreement
 //
 // Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
+// exclusively on TI's micro controller products. The software is owned by
 // TI and/or its suppliers, and is protected under applicable copyright
 // laws. You may not combine this software with "viral" open-source
 // software in order to form a larger program.
@@ -37,7 +37,6 @@
 
 extern unsigned int g_pulUpdateSuccess[8];
 extern unsigned int g_pulUpdateFail[8];
-extern unsigned int g_ulUpdateStatusAddr;
 
 #if (FORCED_UPDATE_PORT == GPIO_PORTA_BASE)
 #define gioPORT gioPORTA
@@ -89,16 +88,4 @@ bool runApplication(void){
 			default:           return true;
 		}
 	}
-}
-
-bool isApplicationValid(void) {
-	uint32_t *pulApp;
-
-	// Read in the status area of the application
-	pulApp = (uint32_t*) g_ulUpdateStatusAddr;
-
-	if ((pulApp[0] == g_pulUpdateSuccess[0])) { // Pattern is 0x5A5A5A5A
-		return (true);    //1 means that pattern is there
-	}
-    return(false);
 }

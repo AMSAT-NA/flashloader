@@ -43,7 +43,7 @@
  */
 void get_software_Version(void) {
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "Flash Loader TI: 1.0.0");
+	UART_putString(UART, "Flash Loader TI: 1.2.0");
 	return;
 }
 
@@ -52,8 +52,8 @@ void get_software_Version(void) {
  *		- Device ID
  *  		- LOT Number
  *  		- WAFFER Number + DIE Locations ( X & Y)
- * 		- Package Type + Flash Memory 
- *	@note: The above Hardware informations are stored in the OTP locations	
+ * 		- Package Type + Flash Memory
+ *	@note: The above Hardware informations are stored in the OTP locations
  */
 void get_hardware_Info(void) {
 	unsigned int LOT_NUM, WAFER_LOC_NUM;

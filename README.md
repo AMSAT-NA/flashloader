@@ -7,7 +7,9 @@ serial line and uses the YModem protocol to upload and download
 software to the SoC.
 
 The code is based on sample code supplied by TI and described
-in the boot loader description found [here](docs/spna192.pdf).
+in the boot loader description found [here](docs/spna192.pdf), except the
+valid flag and all logic around validating the application image in flash
+has been removed by request.
 
 In this context a **flash loader** is the code that runs on the micro controller
 while a **host loader** is a program on an external computer, communicating with it
@@ -90,8 +92,13 @@ happens when this option is selected.
 Option `4` simply prints out the version of the flash loader:
 
 ```text
-Flash Loader TI: 1.0.0
+Flash Loader TI: 1.2.0
 ```
+
+Previous version 1.0.0 implemented the application validation logic.Version 1.1.0
+accidentally removed the run target logic
+which is brought back here in this version.
+
 
 ### Get device information
 
@@ -102,26 +109,22 @@ DEV:           8046AD1D
 LOT NUM:       00B6E020
 WAFER LOC NUM: 0000502B
 FLASH START:   00010000
-FLASH END:     00140000
+FLASH END:     00100000
 ```
 
-The flash start address excludes the flash loader itself.
+The flash start address excludes the flash loader itself. The application must be linked
+to start at the 64K address (0x10000).
 
 ### Application status
 
 Option `6` shows the following information about the application, if loaded:
 
 ```text
-Application valid pattern: 5A5A5A5A
-Application image size:    0000FE00
-Application image address: 00010100
-
 Run target value set to: 0x00000000, Unknown
 Prompt pin is active
 ```
 
-Before an application is loaded for the first time (new flash loader) all these
-values are `FFFFFFFF`.
+After removing the application validation, no address information is available.
 
 The status of the prompt pin can also be seen on this output. The idea is to connect
 this GIO input pin to the Vcc pin on the `USB-Serial` adapter from the host computer
@@ -156,48 +159,15 @@ on reset as shown below, when a valid application is in flash.
 
 The flash loader itself lives at the bottom of the flash memory starting with
 `0x20` (8x32 bits) for interrupt vectors followed by the boot loader code. The
-application area starts at flash address `0x10000` (64k) with 256 bytes (`0x100`) of
-book keeping data followed by the application itself in address `0x10100`. A dump
-of application memory is shown below:
-
-![Application memory map](img/BootloaderMemoryMap.png)
-
-If an application has been loaded without an error, the flash loader will write
-the pattern `0x5A5A5A5A` at the start of the area, followed by the start address
-of the application (`0x10100` here), followed by the size of the application in
-bytes. The proper application code starts at address `0x10100` with 32 bytes containing
-eight interrupt vectors of the application.
+application area starts at flash address `0x10000` (64k).
 
 After boot the flash loader is entered, as it occupies the low memory of flash.
-In case of a valid pattern found in the application start area, the flash loader
+The flash loader
 jumps to the application start offset, which in turn shifts all interrupts
 to the application handlers. The application will therefore handle all interrupts
 until the processor is rebooted and the cycle is repeated.
 
 This in turn means that the application must be set to run in that address.
-The linker command file for an application running using the flash loader
-could have the `MEMORY` section like:
-
-```text
-  VECTORS   (X)   : origin=0x00000000 length=0x00000040
-  FLASH   (RX)    : origin=0x00000040 length=0x0000FFC0
-
-  RUNTARGET (RW)  : origin=0x08000000 length=0x00000010
-  STACKS  (RW)    : origin=0x08000010 length=0x000014F0
-  RAM (RW)        : origin=0x08001500 length=0x0001EAE0
-  RAMVECTORS(RWX) : origin=0x0801FFE0 length=0x00000020
-```
-
-Note that the length of the `FLASH0` has to be shortened by the new offset too.
-Also note that this is only done once for a given project and can possibly
-be done automatically in the `HalCodeGen` program generator.
-
-`RUNTARGET` is a new small (16 byte) section that holds the run target
-value described above.
-
-`RAMVECTORS` is another new section that holds interrupt vectors in RAM,
-in order to dispatch correctly between ISR in flash loader and the
-application.
 
 ## Development environment
 

@@ -5,20 +5,20 @@
 
 // Copyright (c) 2008-2011 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
-// 
+//
 // Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
+// exclusively on TI's micro controller products. The software is owned by
 // TI and/or its suppliers, and is protected under applicable copyright
 // laws. You may not combine this software with "viral" open-source
 // software in order to form a larger program.
-// 
+//
 // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
 // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
 // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
 // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
 // DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
+//
 //
 //*****************************************************************************
 
@@ -54,19 +54,12 @@
 
 //*****************************************************************************
 // The starting address of the application.  This must be a multiple of 32K(sector size)
-// bytes (making it aligned to a page boundary), and can not be 0 (the first sector is 
-// boot loader). 
+// bytes (making it aligned to a page boundary), and can not be 0 (the first sector is
+// boot loader).
 //
 // The flash image of the boot loader must not be larger than this value.
 //*****************************************************************************
-#define APP_START_ADDRESS       0x00010100
-
-//*****************************************************************************
-// The address to store the update status of the application image
-// It contains Application Start Address, Application Image Size, etc
-//
-//*****************************************************************************
-#define APP_STATUS_ADDRESS       0x00010000
+#define APP_START_ADDRESS       0x00010000
 
 #define UART_BAUDRATE     115200
 
@@ -83,7 +76,7 @@
 // will go into update mode instead of calling the application if a pin is read
 // at a particular polarity, forcing an update operation.  In either case, the
 // application is still able to return control to the boot loader in order to
-// start an update. 
+// start an update.
 //
 // Requires: FORCED_UPDATE_PERIPH, FORCED_UPDATE_PORT, FORCED_UPDATE_PIN,
 //           FORCED_UPDATE_POLARITY

@@ -8,13 +8,13 @@
 //
 // Copyright (c) 2006-2011 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
-// 
+//
 // Texas Instruments (TI) is supplying this software for use solely and
 // exclusively on TI's microcontroller products. The software is owned by
 // TI and/or its suppliers, and is protected under applicable copyright
 // laws. You may not combine this software with "viral" open-source
 // software in order to form a larger program.
-// 
+//
 // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
 // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
 // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -41,7 +41,6 @@ static void runTargetStatus(void);
 static void toggleRunTarget(void);
 
 extern uint32_t g_pulUpdateSuccess[8];
-extern uint32_t g_ulUpdateStatusAddr;
 extern uint32_t g_ulUpdateBufferSize;  //32 bytes or 8 32-bit words
 extern char fileName[FILENAME_LEN];
 char tab_1024[1024] = { 0 };
@@ -88,10 +87,13 @@ void UART_Upload(void) {
 	uint32_t imageSize;
 	uint32_t imageAddress;
 
-	updateInfo = (uint32_t*) g_ulUpdateStatusAddr;
+	// No way to know the image size and address as the update status is not available
+	// updateInfo = (uint32_t*) g_ulUpdateStatusAddr;
+	// imageAddress = updateInfo[1];
+	// imageSize = updateInfo[2];
 
-	imageAddress = updateInfo[1];
-	imageSize = updateInfo[2];
+	imageAddress = APP_START_ADDRESS;
+	imageSize = 0x000F0000;
 
 	if (UART_getKey(UART) == CRC) {
 		/* Transmit the flash image through ymodem protocol */
@@ -167,9 +169,7 @@ void UpdaterUART(void) {
 			UART_Upload();
 		} else if (key == 0x33) {
 			JumpAddress = (uint32_t) APP_START_ADDRESS;
-			if(isApplicationValid()){ // Only jump if application is loaded (0x5a5a5a5a pattern written)
-				((void (*)(void)) JumpAddress)();
-			}
+			((void (*)(void)) JumpAddress)();
 		} else if (key == 0x34) {
 			get_software_Version();
 		} else if (key == 0x35) {
@@ -205,25 +205,15 @@ static void toggleRunTarget(){
 
 static void runTargetStatus(){
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "Run target value set to: 0x");
+UART_putString(UART, "Run target value set to: 0x");
 	UART_send32BitData(UART, run_target);
 	UART_putString(UART, ", ");
 	UART_putString(UART, get_target_name(get_target()));
 }
 
 static void applicationStatus(){
-	uint32_t * pulApp;
-
-	pulApp = (uint32_t*) g_ulUpdateStatusAddr;
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "Application valid pattern: 0x");
-	UART_send32BitData(UART, pulApp[0]);
-	UART_putString(UART, CRLF);
-	UART_putString(UART, "Application image size:    0x");
-	UART_send32BitData(UART, pulApp[2]);
-	UART_putString(UART, CRLF);
-	UART_putString(UART, "Application image address: 0x");
-	UART_send32BitData(UART, pulApp[1]);
+	UART_putString(UART, "Application image address: 0x10000");
 	UART_putString(UART, CRLF);
 	runTargetStatus();
 	UART_putString(UART, CRLF);

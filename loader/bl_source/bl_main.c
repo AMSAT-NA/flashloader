@@ -1,7 +1,7 @@
-/* 
-* Copyright (C) 2009-2018 Texas Instruments Incorporated - www.ti.com 
-* 
-* 
+/*
+* Copyright (C) 2009-2018 Texas Instruments Incorporated - www.ti.com
+*
+*
 */
 
 #include "bl_config.h"
@@ -46,7 +46,6 @@ uint32_t g_pulDataBuffer[BUFFER_SIZE];
 
 uint32_t g_pulUpdateSuccess[] =
 		{ 0x5A5A5A5A, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-uint32_t g_ulUpdateStatusAddr = APP_STATUS_ADDRESS;
 
 uint32_t g_ulUpdateBufferSize = 32; /*32 bytes or 8 32-bit words*/
 
@@ -85,7 +84,7 @@ void loader_main(void) {
     hetREG1->FLG = 0xFFFFFFFF;
 #endif
 
-	if (isApplicationValid() && runApplication()) {
+	if (runApplication()) {
 		g_ulTransferAddress = (uint32_t) APP_START_ADDRESS;
 		((void (*)(void)) g_ulTransferAddress)();
 	}

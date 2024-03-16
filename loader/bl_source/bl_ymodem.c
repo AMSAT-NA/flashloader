@@ -68,7 +68,6 @@
 
 char fileName[FILENAME_LEN];
 extern unsigned int g_pulUpdateSuccess[8];
-extern unsigned int g_ulUpdateStatusAddr;
 extern uint32_t g_ulUpdateBufferSize;          //32 bytes or 8 32-bit words
 static void flush_input(sciBASE_t *sci);
 
@@ -115,7 +114,6 @@ int Ymodem_Receive(sciBASE_t *sci, char *buf) {
 			// Only allow to send 'C' MAX_HEADER_COUNT times before returning back to menu
 			if((previous_state == WaitHeader || previous_state == AskHeader) && state == WaitHeader){
 				if(headerCount++ > MAX_HEADER_COUNT){
-					set_target(FLASH_LOADER);
 					softReset();
 				}
 			}
@@ -296,11 +294,10 @@ int Ymodem_Receive(sciBASE_t *sci, char *buf) {
 		}  //while(file_done)
 	}  //while(loop)
 
-	if (errors == 0) {
-		g_pulUpdateSuccess[2] = (uint32_t) imageSize;
-		oReturnCheck = Fapi_BlockProgram(ucBank, g_ulUpdateStatusAddr,
-				(unsigned long) &g_pulUpdateSuccess, g_ulUpdateBufferSize);
-	}
+	// if (errors == 0) {
+	 	// Previous version of the code would write status to the first 32 bytes of the flash
+	 	// This is not done any more.
+	// }
 	return (int) imageSize;
 }
 
