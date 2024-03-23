@@ -92,12 +92,14 @@ happens when this option is selected.
 Option `4` simply prints out the version of the flash loader:
 
 ```text
-Flash Loader TI: 1.2.0
+Flash Loader TI: 1.3.0
 ```
 
 Previous version 1.0.0 implemented the application validation logic.Version 1.1.0
 accidentally removed the run target logic
-which is brought back here in this version.
+which is brought back here in this version.  Version 1.3 fixes a hang if the file
+we are trying to upload is too big, and also sends NULs on startup to avoid occasional
+garbage output when using the N2HET.
 
 
 ### Get device information

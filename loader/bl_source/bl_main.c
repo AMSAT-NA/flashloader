@@ -93,6 +93,19 @@ void loader_main(void) {
 	sciReceive(UART, 1, &c); // As we are in Interrupt mode this call will not block
 #else
 	hetREG1->INTENAS = 1 << 23; // Enable HET Receive interrupt
+    {
+	    /*
+	     * This just sends a bunch of nulls which for some reason prevents garbage from
+	     * appearing on the screen (sometimes).
+	     */
+        int i=0x1fff;
+        while(i--){}
+        i=0xff;
+        while(i--){
+            UART_putChar(UART,0);
+        }
+        initQueue();
+    }
 #endif
 	UpdaterUART();
 

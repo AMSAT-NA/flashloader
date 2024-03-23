@@ -257,6 +257,7 @@ int Ymodem_Receive(sciBASE_t *sci, char *buf) {
 					/* Test the size of the image to be sent */
 					if (!BLInternalFlashStartAddrCheck(FlashDestination, imageSize)) {
 						state = AbortHeader;
+						break;
 					}
 					/* Initialize the Flash Wrapper registers */
 					oReturnCheck = 0;

@@ -83,7 +83,6 @@ void UART_Download() {
  */
 void UART_Upload(void) {
 	uint32_t status = 0;
-	uint32_t *updateInfo;
 	uint32_t imageSize;
 	uint32_t imageAddress;
 
