@@ -121,9 +121,9 @@ static void showMainMenu(){
 	UART_putString(UART,
 			"  2. Upload the Application Image From the Internal Flash");
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "  3. Execute the Application Code");
+	UART_putString(UART, "  3 or a. Execute the Application Code");
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "  4. Get Flash Loader Version");
+	UART_putString(UART, "  4 or v. Get Flash Loader Version");
 	UART_putString(UART, CRLF);
 	UART_putString(UART, "  5. Get Device Information");
 	UART_putString(UART, CRLF);
