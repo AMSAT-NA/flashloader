@@ -166,10 +166,10 @@ void UpdaterUART(void) {
 		} else if (key == 0x32) {
 			/* Upload user application from the Flash */
 			UART_Upload();
-		} else if (key == 0x33) {
+		} else if ((key == 0x33) || (key == 'a')) {
 			JumpAddress = (uint32_t) APP_START_ADDRESS;
 			((void (*)(void)) JumpAddress)();
-		} else if (key == 0x34) {
+		} else if ((key == 0x34) || (key == 'v')) {
 			get_software_Version();
 		} else if (key == 0x35) {
 			get_hardware_Info();
