@@ -43,7 +43,7 @@
  */
 void get_software_Version(void) {
 	UART_putString(UART, CRLF);
-	UART_putString(UART, "Flash Loader TI: 1.3.0");
+	UART_putString(UART, "Flash Loader TI: 1.4.0");
 	return;
 }
 
